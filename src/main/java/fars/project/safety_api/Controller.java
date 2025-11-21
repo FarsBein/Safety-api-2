@@ -1,5 +1,8 @@
 package fars.project.safety_api;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,8 +20,15 @@ public class Controller {
 
     @PostMapping("api/simple/json")
     public String setProfile(@RequestBody String body) {
-        System.out.println("Raw JSON body>>> " + body);
+        System.out.println("Raw JSON body: " + body);
         return "Received body: " + body;
+    }
+
+    @GetMapping("api/health")
+    public Map<String, Boolean> health() {
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("success", true);
+        return response;
     }
 }
 
