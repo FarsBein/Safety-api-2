@@ -1,7 +1,12 @@
 package fars.project.safety_api;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +33,26 @@ public class Controller {
     public Map<String, Boolean> health() {
         Map<String, Boolean> response = new HashMap<>();
         response.put("success", true);
+        return response;
+    }
+
+    @GetMapping("api/raw/assault-data")
+    public JsonNode getRawData() {
+        Path jsonDataFilePath = Paths.get("data/assaults.json");
+        JsonNode jsonData = null;
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            jsonData = objectMapper.readTree(jsonDataFilePath.toFile());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return jsonData;
+    }
+
+
+    @PostMapping("api/score/{LatAndLong}")
+    public Map<String, Double> scoreByLatAndLong(@PathVariable String LatAndLong) {
+        Map<String, Double> response = new HashMap<>();
         return response;
     }
 }

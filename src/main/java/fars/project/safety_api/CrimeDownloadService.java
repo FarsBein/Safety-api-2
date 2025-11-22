@@ -69,9 +69,6 @@ public class CrimeDownloadService {
 
     public List<Map<String, String>> parseFilterCsv(InputStream csvStream) throws IOException {
         List<Map<String, String>> rows = new ArrayList<>();
-        // read the csv
-        // filter headers to only get a set of columns = ['OCC_YEAR','PREMISES_TYPE','LONG_WGS84', 'LAT_WGS84','x', 'y']
-        // loop through the rows filter by OCC_YEAR
 
         try (CSVReader reader = new CSVReader(new InputStreamReader(csvStream, StandardCharsets.UTF_8))) {
 
@@ -90,11 +87,18 @@ public class CrimeDownloadService {
             while ((line = reader.readNext()) != null) {
 
                 // filter rows
+                // keep only data from the last 2 years
                 Integer dateIdx = headerMap.get("OCC_YEAR");
                 if (line[dateIdx] == null || line[dateIdx].length() < 4) continue;
                 int year = Integer.parseInt(line[dateIdx]);
                 if (year < cutOffYear) continue;
 
+                // filter rows
+                // keep data that is related to common public areas assaults
+                // removed "Other", "Commercial",  because they seem to be outside the goal scope of targeting crimes that might occur passing the neighborhood
+                List<String> publicPremisesType = Arrays.asList("Transit", "Outside");
+                Integer premisesTypeIdx = headerMap.get("PREMISES_TYPE");
+                if (!publicPremisesType.contains(line[premisesTypeIdx])) continue;
 
                 // passed rows
                 Map<String, String> row = new HashMap<>();
@@ -139,7 +143,7 @@ public class CrimeDownloadService {
     }
 
     public void saveJson(String json) throws IOException {
-        Path path = Paths.get("data/assaults_last_2_years.json");
+        Path path = Paths.get("data/assaults.json");
         Files.createDirectories(path.getParent()); // create folder if doesnt exists
         Files.write(path, json.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
     }
