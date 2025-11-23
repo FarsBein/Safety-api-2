@@ -57,6 +57,3 @@ Access the API at `http://localhost:8080` after starting the server.
     ```bash
     curl "http://localhost:8080/api/raw/assault-data"
     ```
-
-## License
-MIT
